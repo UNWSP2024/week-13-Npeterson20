@@ -1,36 +1,50 @@
 import sqlite3
 
-def create_cities_db():
+def display_cities():
     conn = sqlite3.connect('cities.db')
     cursor = conn.cursor()
-    
-    # Create the Cities table
-    cursor.execute('''CREATE TABLE IF NOT EXISTS Cities (
-                        CityID INTEGER PRIMARY KEY,
-                        CityName TEXT,
-                        Population REAL
-                    )''')
 
-    # Insert sample data
-    cities_data = [
-        ("New York", 8419000),
-        ("Los Angeles", 3980000),
-        ("Chicago", 2716000),
-        ("Houston", 2328000),
-        ("Phoenix", 1690000),
-        ("Philadelphia", 1584000),
-        ("San Antonio", 1548000),
-        ("San Diego", 1424000),
-        ("Dallas", 1341000),
-        ("San Jose", 1027000),
-        # Add more cities to total 20 rows...
-    ]
-    
-    # Populate the table
-    cursor.executemany('INSERT INTO Cities (CityName, Population) VALUES (?, ?)', cities_data)
-    
-    conn.commit()
+    while True:
+        print("\nSelect an operation:")
+        print("1. Display cities sorted by population (ascending)")
+        print("2. Display cities sorted by population (descending)")
+        print("3. Display cities sorted by name")
+        print("4. Display total population")
+        print("5. Display average population")
+        print("6. Display city with the highest population")
+        print("7. Display city with the lowest population")
+        print("8. Exit")
+
+        choice = input("Enter your choice: ")
+
+        if choice == '1':
+            cursor.execute('SELECT * FROM Cities ORDER BY Population ASC')
+        elif choice == '2':
+            cursor.execute('SELECT * FROM Cities ORDER BY Population DESC')
+        elif choice == '3':
+            cursor.execute('SELECT * FROM Cities ORDER BY CityName')
+        elif choice == '4':
+            cursor.execute('SELECT SUM(Population) FROM Cities')
+            print("Total population:", cursor.fetchone()[0])
+            continue
+        elif choice == '5':
+            cursor.execute('SELECT AVG(Population) FROM Cities')
+            print("Average population:", cursor.fetchone()[0])
+            continue
+        elif choice == '6':
+            cursor.execute('SELECT * FROM Cities ORDER BY Population DESC LIMIT 1')
+        elif choice == '7':
+            cursor.execute('SELECT * FROM Cities ORDER BY Population ASC LIMIT 1')
+        elif choice == '8':
+            break
+        else:
+            print("Invalid choice, try again.")
+            continue
+
+        results = cursor.fetchall()
+        for row in results:
+            print(row)
+
     conn.close()
 
-create_cities_db()
-print("Cities database created and populated.")
+display_cities()
